@@ -1,0 +1,76 @@
+//
+//  ViewController.swift
+//  Coach Penguin
+//
+//  Created by Shansita on 19/10/19.
+//  Copyright © 2019 Shansita Das Sharma. All rights reserved.
+//
+
+import UIKit
+import UserNotifications
+import Foundation
+
+class ViewController: UIViewController {
+            
+    @IBOutlet var minTxt: UITextField!
+
+  
+    func construct() -> UNMutableNotificationContent { //construct notification
+        
+        let content = UNMutableNotificationContent()
+        content.title = “Sample notification title”
+        content.body = “notification body”
+        content.badge = 1
+        content.sound = UNNotificationSound.default
+        
+        
+        let url = Bundle.main.url(forResource: "penguin", withExtension: "png")
+        if let attachment = try? UNNotificationAttachment(identifier: "penguin", url: url!, options: nil) {
+            content.attachments = [attachment]
+        }
+        return content
+    }
+ 
+ 
+    
+    @objc func notifCaller() { //notification function
+        print("im in notifCaller")
+        notif()
+        }
+        
+
+    func notif(){
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(0), repeats: false)
+        let request = UNNotificationRequest(identifier: "penguin", content: construct(), trigger: trigger)
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: { error in
+            // handle error
+        })
+ 
+    }
+    
+
+
+    @IBAction func action(_ sender: Any)
+    {
+        let sec = (Double)(minTxt.text!)!
+        print("pressed yep")
+        timer = Timer.scheduledTimer(timeInterval: sec, target: self, selector: #selector(notifCaller), userInfo: nil, repeats: true)
+        print("timed yep")
+    }
+    
+    
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        //Ask for permission
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge], completionHandler: {didAllow, error in
+        })
+ 
+    }
+    
+    
+    
+}
